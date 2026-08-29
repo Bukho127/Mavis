@@ -35,7 +35,7 @@ function AskMavis() {
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 whitespace-nowrap font-semibold text-[#17211f]"
+            className="flex items-center gap-2 whitespace-nowrap font-semibold text-[#17211f] cursor-pointer"
           >
             <HugeiconsIcon icon={Message01Icon} size={20} className="text-white bg-[#4A7FF8] rounded-full" />
             Ask Mavis

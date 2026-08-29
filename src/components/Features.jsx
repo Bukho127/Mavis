@@ -1,11 +1,9 @@
-import demo from "../assets/Background/Interview-demo.svg";
+import React from 'react'
 
-function Demo() {
+function Features() {
   return (
-    <div className="flex items-center justify-center">
-      <img src={demo} alt="Demo" />
-    </div>
-  );
+    <div>Features</div>
+  )
 }
 
-export default Demo;
+export default Features
