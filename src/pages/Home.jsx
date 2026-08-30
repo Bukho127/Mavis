@@ -8,7 +8,7 @@ function Home() {
     <>
       <Hero />
       <FramedSection
-        className="min-h-[28rem] py-16 sm:py-[10vw]"
+        className="min-h-[15rem] py-16 sm:py-10"
         id="content"
         aria-labelledby="content-title"
       >
