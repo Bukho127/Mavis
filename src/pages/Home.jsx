@@ -2,6 +2,7 @@ import Hero from "../components/Hero";
 import FramedSection from "../components/FramedSection";
 import WhatIsMavis from "../components/WhatIsMavis";
 import Features from "../components/Features";
+import HowItWorks from "../components/HowItWorks";
 
 function Home() {
   return (
@@ -15,6 +16,7 @@ function Home() {
         <WhatIsMavis />
       </FramedSection>
       <Features />
+      <HowItWorks />
     </>
   );
 }

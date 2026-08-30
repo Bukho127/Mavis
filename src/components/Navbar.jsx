@@ -1,24 +1,58 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ChevronDownIcon } from "@hugeicons/core-free-icons";
 import logo from "../assets/logos/logo.svg";
 
 function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+
+    handleScroll(); // set initial state on mount
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <nav className="sticky top-0 z-20 flex items-center justify-between bg-white px-5 py-4 text-black sm:px-[5vw]" aria-label="Main navigation">
-      <NavLink className="inline-flex items-center bg-white px-2.5 py-1.5" to="/">
-        <img className="block h-auto w-28" src={logo} alt="Mavis" />
+    <nav
+      className={`sticky top-0 z-20 flex items-center justify-between px-5 py-4 sm:px-[5vw] transition-all duration-300 ${
+        isScrolled
+          ? "border-b border-white/10 bg-black/40 text-white backdrop-blur-lg"
+          : "bg-white text-black"
+      }`}
+      aria-label="Main navigation"
+    >
+      <NavLink className="inline-flex items-center px-2.5 py-1.5" to="/">
+        <img
+          className={`block h-auto w-28 transition-all duration-300 ${
+            isScrolled ? "brightness-0 invert" : ""
+          }`}
+          src={logo}
+          alt="Mavis"
+        />
       </NavLink>
       <div className="flex items-center gap-3 text-sm sm:gap-7">
-        <NavLink className="no-underline" to="/#features">Features</NavLink>
-        <NavLink className="no-underline" to="/#how-it-works">How it works</NavLink>
-        <NavLink className="no-underline" to="/#pricing">Pricing</NavLink>
+        <NavLink className="no-underline" to="/#features">
+          Features
+        </NavLink>
+        <NavLink className="no-underline" to="/#how-it-works">
+          How it works
+        </NavLink>
+        <NavLink className="no-underline" to="/#pricing">
+          Pricing
+        </NavLink>
         <NavLink className="flex items-center gap-1" to="/resources">
           Resources
           <HugeiconsIcon icon={ChevronDownIcon} size={16} />
         </NavLink>
         <NavLink
-          className="rounded-md bg-[#d1d1d1] px-4 py-1.5 text-black no-underline"
+          className={`rounded-md px-4 py-1.5 no-underline transition-colors duration-300 ${
+            isScrolled ? "bg-white/15 text-white" : "bg-[#d1d1d1] text-black"
+          }`}
           to="/login"
         >
           Login

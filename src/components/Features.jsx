@@ -37,12 +37,12 @@ const features = [
 function Features() {
   return (
     <FramedSection
-      className="py-16 sm:py-15"
+      className="py-16 sm:py-5"
       id="features"
       aria-labelledby="features-title"
       showTop={false}
     >
-      <div className="grid grid-cols-1 gap-10 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] sm:gap-16">
+      <div className="grid grid-cols-1 gap-10 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] sm:gap-16 py-10">
         <div>
           <p className="mb-4 text-md font-semibold uppercase tracking-[0.12em] text-[#4A7FF8]">
             Key Features
