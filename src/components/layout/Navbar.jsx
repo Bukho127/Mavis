@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ChevronDownIcon } from "@hugeicons/core-free-icons";
-import logo from "../assets/logos/logo.svg";
+import logo from "../../assets/logos/logo.svg";
+import ResourcesDropdown from "./ResourcesDropdown";
 
 function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(() => window.scrollY > 40);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 40);
     };
 
-    handleScroll(); // set initial state on mount
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -45,10 +44,13 @@ function Navbar() {
         <NavLink className="no-underline" to="/#pricing">
           Pricing
         </NavLink>
-        <NavLink className="flex items-center gap-1" to="/resources">
-          Resources
-          <HugeiconsIcon icon={ChevronDownIcon} size={16} />
-        </NavLink>
+
+        <ResourcesDropdown
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          isScrolled={isScrolled}
+        />
+
         <NavLink
           className={`rounded-md px-4 py-1.5 no-underline transition-colors duration-300 ${
             isScrolled ? "bg-white/15 text-white" : "bg-[#d1d1d1] text-black"

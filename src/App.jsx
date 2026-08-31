@@ -1,9 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import Footer from './components/Footer'
-import Navbar from './components/Navbar'
+import Footer from './components/layout/Footer'
+import Navbar from './components/layout/Navbar'
 import Home from './pages/Home'
 import Placeholder from './pages/Placeholder'
-import AnnouncementBar from './components/AnnouncementBar'
+import AnnouncementBar from './components/layout/AnnouncementBar'
 
 function App() {
   return (

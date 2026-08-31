@@ -1,8 +1,8 @@
-import Hero from "../components/Hero";
-import FramedSection from "../components/FramedSection";
-import WhatIsMavis from "../components/WhatIsMavis";
-import Features from "../components/Features";
-import HowItWorks from "../components/HowItWorks";
+import Hero from "../components/landing/Hero";
+import FramedSection from "../components/layout/FramedSection";
+import WhatIsMavis from "../components/landing/WhatIsMavis";
+import Features from "../components/landing/Features";
+import HowItWorks from "../components/landing/HowItWorks";
 
 function Home() {
   return (

@@ -1,4 +1,4 @@
-import backgroundImage from "../assets/Background/background.png";
+import backgroundImage from "../../assets/Background/background.png";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight02Icon } from "@hugeicons/core-free-icons";
 import AskMavis from "./AskMavis";

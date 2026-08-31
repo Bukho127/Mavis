@@ -1,8 +1,8 @@
-import mavisIcon from "../assets/logos/mavis-icon.svg";
-import github from "../assets/logos/github.svg";
-import email from "../assets/logos/email.svg";
-import linkedin from "../assets/logos/linkedin.svg";
-import discord from "../assets/logos/discord.svg";
+import mavisIcon from "../../assets/logos/mavis-icon.svg";
+import github from "../../assets/logos/github.svg";
+import email from "../../assets/logos/email.svg";
+import linkedin from "../../assets/logos/linkedin.svg";
+import discord from "../../assets/logos/discord.svg";
 
 const productLinks = [
   { label: "Features", href: "/#features" },

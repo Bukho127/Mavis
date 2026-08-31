@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PdfIcon, Upload04Icon } from "@hugeicons/core-free-icons";
-import FramedSection from "./FramedSection";
+import FramedSection from "../layout/FramedSection";
 
 const steps = [
   {

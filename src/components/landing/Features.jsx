@@ -5,7 +5,7 @@ import {
   ActivityIcon,
   SearchAreaIcon,
 } from "@hugeicons/core-free-icons";
-import FramedSection from "./FramedSection";
+import FramedSection from "../layout/FramedSection";
 
 const features = [
   {
