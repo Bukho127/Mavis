@@ -61,7 +61,7 @@ function Navbar() {
         </NavLink>
         <NavLink
           className="rounded-md bg-[#4a7ff8] px-4 py-1.5 text-white no-underline"
-          to="/start-interview"
+          to="/register"
         >
           Start interview
         </NavLink>

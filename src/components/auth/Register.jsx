@@ -1,15 +1,18 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mail01Icon, 
-    CheckmarkBadge01Icon,
-    Password
- } from "@hugeicons/core-free-icons";
+import {
+  Profile02Icon,
+  Mail01Icon,
+  CheckmarkBadge01Icon,
+  Password,
+} from "@hugeicons/core-free-icons";
 import logo from "../../assets/logos/logo.svg";
 import dashboardPreview from "../../assets/Background/dashboard-preview.svg";
+import { useState } from "react";
 
-function Login({ onLogin, onGoogleLogin }) {
+function Register({ onRegister, onGoogleLogin }) {
   const [formData, setFormData] = useState({
+    fullName: "",
     email: "",
     password: "",
   });
@@ -26,6 +29,10 @@ function Login({ onLogin, onGoogleLogin }) {
 
   const validate = () => {
     const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    }
 
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -47,11 +54,11 @@ function Login({ onLogin, onGoogleLogin }) {
     e.preventDefault();
 
     if (!validate()) return;
-    if (!onLogin) return;
+    if (!onRegister) return;
 
     setIsSubmitting(true);
     try {
-      await onLogin(formData);
+      await onRegister(formData);
     } finally {
       setIsSubmitting(false);
     }
@@ -72,7 +79,33 @@ function Login({ onLogin, onGoogleLogin }) {
             Use Mavis to prepare for your next dream job in few minutes.
           </p>
 
-          <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4" noValidate>
+            <div>
+              <div
+                className={`flex items-center gap-3 rounded-sm border px-4 py-3 ${
+                  errors.fullName ? "border-red-400" : "border-gray-300"
+                }`}
+              >
+                <HugeiconsIcon
+                  icon={Profile02Icon}
+                  size={18}
+                  className="text-gray-400"
+                />
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="Full name"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+                  disabled={isSubmitting}
+                />
+              </div>
+              {errors.fullName && (
+                <p className="mt-1 text-xs text-red-500">{errors.fullName}</p>
+              )}
+            </div>
+
             <div>
               <div
                 className={`flex items-center gap-3 rounded-sm border px-4 py-3 ${
@@ -148,14 +181,14 @@ function Login({ onLogin, onGoogleLogin }) {
               disabled={isSubmitting}
               className="mt-2 cursor-pointer rounded-sm bg-[#0382F7] px-4 py-3 text-sm text-white disabled:opacity-60"
             >
-              {isSubmitting ? "Signing in..." : "Continue"}
+              {isSubmitting ? "Creating account..." : "Continue"}
             </button>
           </form>
 
           <p className="mt-6 text-sm text-gray-600">
-            Don't have an account?{" "}
-            <NavLink to="/register" className="font-medium text-[#4A7FF8]">
-              Sign Up
+            Already have an account?{" "}
+            <NavLink to="/login" className="font-medium text-[#4A7FF8]">
+              Sign In
             </NavLink>
           </p>
         </div>
@@ -181,4 +214,4 @@ function Login({ onLogin, onGoogleLogin }) {
   );
 }
 
-export default Login;
+export default Register;

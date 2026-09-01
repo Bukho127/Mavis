@@ -5,10 +5,11 @@ import Home from './pages/Home'
 import Placeholder from './pages/Placeholder'
 import AnnouncementBar from './components/layout/AnnouncementBar'
 import SignIn from './components/auth/SignIn'
+import Register from './components/auth/Register'
 
 function AppLayout() {
   const location = useLocation()
-  const isAuthPage = location.pathname === '/login'
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
 
   return (
     <div className="min-h-screen bg-[#f2efe8] text-[#17211f]">
@@ -18,6 +19,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<SignIn />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/about" element={<Placeholder />} />
           <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
