@@ -12,7 +12,7 @@ import { useState } from "react";
 
 function Register({ onRegister, onGoogleLogin }) {
   const [formData, setFormData] = useState({
-    fullName: "",
+    full_name: "",
     email: "",
     password: "",
   });
@@ -30,8 +30,8 @@ function Register({ onRegister, onGoogleLogin }) {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = "Full name is required";
     }
 
     if (!formData.email.trim()) {
@@ -83,7 +83,7 @@ function Register({ onRegister, onGoogleLogin }) {
             <div>
               <div
                 className={`flex items-center gap-3 rounded-sm border px-4 py-3 ${
-                  errors.fullName ? "border-red-400" : "border-gray-300"
+                  errors.full_name ? "border-red-400" : "border-gray-300"
                 }`}
               >
                 <HugeiconsIcon
@@ -93,16 +93,16 @@ function Register({ onRegister, onGoogleLogin }) {
                 />
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="full_name"
+                  value={formData.full_name}
                   onChange={handleChange}
                   placeholder="Full name"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
                   disabled={isSubmitting}
                 />
               </div>
-              {errors.fullName && (
-                <p className="mt-1 text-xs text-red-500">{errors.fullName}</p>
+              {errors.full_name && (
+                <p className="mt-1 text-xs text-red-500">{errors.full_name}</p>
               )}
             </div>
 
