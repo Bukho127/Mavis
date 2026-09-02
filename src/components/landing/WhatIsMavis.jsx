@@ -5,7 +5,7 @@ function WhatIsMavis() {
         What is Mavis?
       </p>
       <h2
-        className="font-['Avantt_Trial','Trebuchet_MS',sans-serif] font-semibold text-4xl text-center leading-[1.2] text-[#17211f] sm:text-4xl max-w-[25ch] mx-auto"
+        className="font-['Avantt_Trial','Trebuchet_MS',sans-serif] font-semibold text-4xl text-center leading-[1.2] !text-[#1E055B] sm:text-4xl max-w-[25ch] mx-auto"
         id="content-title"
       >
         Revolutionizing how people prepare for interviews

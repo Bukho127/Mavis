@@ -53,7 +53,7 @@ function HowItWorks() {
       <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-16 sm: py-8">
         <div>
           <h2
-            className="mb-8 font-['Avantt_Trial','Trebuchet_MS',sans-serif] text-3xl font-semibold leading-[1.1] text-[#17211f] sm:text-4xl"
+            className="mb-8 font-['Avantt_Trial','Trebuchet_MS',sans-serif] text-3xl font-semibold leading-[1.1] text-[#1E055B] sm:text-4xl"
             id="how-it-works-title"
           >
             How to simulate an interview with Mavis

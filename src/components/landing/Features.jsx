@@ -48,7 +48,7 @@ function Features() {
             Key Features
           </p>
           <h2
-            className="font-['Avantt_Trial','Trebuchet_MS',sans-serif] text-4xl font-semibold leading-[1.05] text-[#17211f] sm:text-5xl"
+            className="font-['Avantt_Trial','Trebuchet_MS',sans-serif] text-4xl font-semibold leading-[1.05] !text-[#1E055B] sm:text-5xl"
             id="features-title"
           >
             Interview prep that actually feels like the real thing
