@@ -3,6 +3,7 @@ import {
   Clock01Icon,
   MoneyNotFound01Icon,
   CalendarRemove01Icon,
+  CircleArrowRight02Icon,
 } from "@hugeicons/core-free-icons";
 import FramedSection from "../layout/FramedSection";
 import transparentPricingImage from "../../assets/Background/lady-smiling.png";
@@ -29,7 +30,7 @@ function TransparentPricing() {
       id="pricing"
       aria-labelledby="pricing-title"
       showTop={false}
-
+      showBottom={false}
     >
       <div className="grid grid-cols-1 items-center gap-12 sm:grid-cols-2 sm:gap-16">
         <img
@@ -39,6 +40,10 @@ function TransparentPricing() {
         />
 
         <div>
+          <p className="mb-4 inline-flex items-center gap-1 rounded-full border-[1px] border-[#E6E6E6] px-2 py-1.5 text-sm tracking-[0.12em] text-[#4A7FF8]">
+            <HugeiconsIcon icon={CircleArrowRight02Icon} size={18} color="text-[#4A7FF8]" />
+            Transparent Pricing
+          </p>
           <h2
             className="mb-4 font-['Avantt_Trial','Trebuchet_MS',sans-serif] text-3xl font-semibold leading-[1.1] text-[#1E055B] sm:text-4xl"
             id="pricing-title"
@@ -47,8 +52,8 @@ function TransparentPricing() {
           </h2>
           <p className="mb-8 text-gray-600">
             Pay for the practice time you'll actually use, with plans built
-            around real interview prep, not a metered trial that runs out
-            right when you need it most.
+            around real interview prep, not a metered trial that runs out right
+            when you need it most.
           </p>
 
           <ul className="flex flex-col gap-4">
@@ -67,6 +72,14 @@ function TransparentPricing() {
               </li>
             ))}
           </ul>
+          <button>
+            <a
+              href="/pricing"
+              className="mt-8 inline-flex items-center rounded-lg bg-[#4A7FF8] px-5 py-3 text-white no-underline"
+            >
+              Explore our plans
+            </a>
+          </button>
         </div>
       </div>
     </FramedSection>
