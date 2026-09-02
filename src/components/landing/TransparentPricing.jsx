@@ -59,10 +59,10 @@ function TransparentPricing() {
           <ul className="flex flex-col gap-4">
             {points.map((point) => (
               <li key={point.text} className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#4A7FF8]/10">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center">
                   <HugeiconsIcon
                     icon={point.icon}
-                    size={30}
+                    size={25}
                     className="text-[#4A7FF8]"
                   />
                 </span>

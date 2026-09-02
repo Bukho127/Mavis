@@ -1,48 +1,31 @@
-import { useEffect, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { PdfIcon, Upload04Icon } from "@hugeicons/core-free-icons";
+import {
+  ClipboardPasteIcon, 
+  Briefcase01Icon, 
+  Mic01Icon,
+} from "@hugeicons/core-free-icons";
 import FramedSection from "../layout/FramedSection";
+import DragAndDropBurner from "../../assets/Background/drag_and_drop_burner.svg";
 
 const steps = [
   {
-    number: "01",
+    icon: ClipboardPasteIcon,
     title: "Paste your resume",
     description: "Drop in your resume or CV so Mavis knows your background.",
   },
   {
-    number: "02",
+    icon: Briefcase01Icon,
     title: "Paste the job description",
     description: "Add the role you're applying for so questions stay relevant.",
   },
   {
-    number: "03",
+    icon: Mic01Icon,
     title: "Start talking",
     description: "Mavis takes it from there, real questions, real time.",
   },
 ];
 
 function HowItWorks() {
-  const sectionRef = useRef(null);
-  const [isInView, setIsInView] = useState(false);
-
-  useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <FramedSection
       className="py-16 sm:py-20"
@@ -50,7 +33,7 @@ function HowItWorks() {
       aria-labelledby="how-it-works-title"
       showTop={false}
     >
-      <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-16 sm: py-8">
+      <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-16 sm:py-8">
         <div>
           <h2
             className="mb-8 font-['Avantt_Trial','Trebuchet_MS',sans-serif] text-3xl font-semibold leading-[1.1] text-[#1E055B] sm:text-4xl"
@@ -61,13 +44,19 @@ function HowItWorks() {
 
           <ol className="flex flex-col gap-6">
             {steps.map((step) => (
-              <li key={step.number} className="flex gap-4">
-                <span className="text-sm font-semibold text-[#4A7FF8]">
-                  {step.number}
+              <li key={step.title} className="flex gap-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+                  <HugeiconsIcon
+                    icon={step.icon}
+                    size={25}
+                    className="text-[#4A7FF8]"
+                  />
                 </span>
                 <div>
                   <h3 className="font-semibold text-[#17211f]">{step.title}</h3>
-                  <p className="mt-1 text-sm text-gray-600">{step.description}</p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {step.description}
+                  </p>
                 </div>
               </li>
             ))}
@@ -81,41 +70,12 @@ function HowItWorks() {
           </a>
         </div>
 
-        <div
-          ref={sectionRef}
-          className="relative flex min-h-[320px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8"
-        >
-          <div className="relative mb-6 h-24 w-full max-w-[280px]">
-            <div
-              className={`absolute left-0 top-0 flex w-65 items-center gap-2 rounded-lg border border-gray-200 bg-white p-3 shadow-md transition-all duration-700 ease-out ${
-                isInView
-                  ? "translate-x-6 translate-y-4 rotate-[-4deg] opacity-100"
-                  : "-translate-y-10 rotate-0 opacity-0"
-              }`}
-            >
-              <HugeiconsIcon icon={PdfIcon} size={22} className="shrink-0 text-red-500" />
-              <span className="truncate text-xs font-medium text-gray-700">
-                CV_final_JuniorDev.pdf
-              </span>
-            </div>
-
-            <div
-              className={`absolute left-8 top-6 flex w-65 items-center gap-2 rounded-lg border border-gray-200 bg-white p-3 shadow-md transition-all duration-700 ease-out delay-150 ${
-                isInView
-                  ? "translate-x-2 translate-y-8 rotate-[3deg] opacity-100"
-                  : "-translate-y-10 rotate-0 opacity-0"
-              }`}
-            >
-              <HugeiconsIcon icon={PdfIcon} size={22} className="shrink-0 text-red-500" />
-              <span className="truncate text-xs font-medium text-gray-700">
-                My_cover_letter.pdf
-              </span>
-            </div>
-          </div>
-
-          <HugeiconsIcon icon={Upload04Icon} size={28} className="mb-3 text-gray-400" />
-          <p className="text-sm font-medium text-gray-600">Click to upload</p>
-          <p className="mt-1 text-xs text-gray-400">PDF, DOCX up to 5MB</p>
+        <div className="flex items-center justify-center">
+          <img
+            src={DragAndDropBurner}
+            alt="Drag and drop your resume and job description"
+            className="w-full max-w-md rounded-2xl"
+          />
         </div>
       </div>
     </FramedSection>

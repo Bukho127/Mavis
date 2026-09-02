@@ -37,6 +37,50 @@ export async function loginUser(credentials) {
   return data;
 }
 
+export async function streamMarketingChat(message, onChunkReceived) {
+  const response = await fetch("/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ messages: [{ role: "user", content: message }] }),
+  });
+
+  if (!response.ok) throw new Error("Network stream response failed");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    // Only process complete lines; keep any trailing partial line in the buffer
+    const lines = buffer.split("\n");
+    buffer = lines.pop(); // last element may be incomplete, hold it for next read
+
+    for (const line of lines) {
+      if (line.startsWith("data: ")) {
+        const payload = line.slice(6).trim();
+        if (!payload || payload === "[DONE]") continue;
+
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.text) {
+            onChunkReceived(parsed.text);
+          }
+        } catch (e) {
+          console.error("Failed to parse SSE chunk:", payload, e);
+        }
+      }
+    }
+  }
+}
+
+
 /**
  * Register a new user
  * @param {{ full_name: string, email: string, password: string }} details
