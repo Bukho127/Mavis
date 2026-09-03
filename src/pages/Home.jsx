@@ -4,6 +4,7 @@ import WhatIsMavis from "../components/landing/WhatIsMavis";
 import Features from "../components/landing/Features";
 import HowItWorks from "../components/landing/HowItWorks";
 import TransparentPricing from "../components/landing/TransparentPricing";
+import PreFooterBanner from "../components/landing/PreFooterBanner";
 
 function Home() {
   return (
@@ -19,6 +20,7 @@ function Home() {
       <Features />
       <TransparentPricing />
       <HowItWorks />
+      <PreFooterBanner />
     </>
   );
 }

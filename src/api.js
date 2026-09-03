@@ -80,6 +80,14 @@ export async function streamMarketingChat(message, onChunkReceived) {
   }
 }
 
+export async function fetchAllInterviews(token) {
+  return request("/interviews", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 
 /**
  * Register a new user
