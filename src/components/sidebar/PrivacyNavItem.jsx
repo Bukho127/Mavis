@@ -15,7 +15,7 @@ function PrivacyNavItem() {
       }
     >
       <HugeiconsIcon icon={FileSecurityIcon} size={17} />
-      <span className="flex-1">Privacy</span>
+      <span className="flex-1">Privacy & Data</span>
     </NavLink>
   );
 }
