@@ -7,7 +7,7 @@ const Search = () => {
   const [open, setOpen] = useState(false)
   return (
     <>
-    <div className='relative mb-4 flex items-center rounded-lg bg-stone-200 px-2 py-1.5 text-sm'>
+    <div className='relative mb-4 flex items-center border border-stone-300 rounded-lg bg-stone-200 px-2 py-1.5 text-sm'>
       <HugeiconsIcon icon={Search01Icon} size={20} className='mr-2 shrink-0 text-stone-500' />
       <input
        onFocus={(e)=>{

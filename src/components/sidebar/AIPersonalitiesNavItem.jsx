@@ -16,7 +16,7 @@ function AIPersonalitiesNavItem() {
     >
       <HugeiconsIcon icon={SparklesIcon} size={17} />
       <span className="flex-1">AI Personalities</span>
-      <span className="rounded bg-stone-200 px-1.5 py-0.5 text-[10px] font-semibold text-stone-500">
+      <span className="rounded bg-stone-200 border border-stone-300 px-1.5 py-0.5 text-[10px] text-stone-500">
         BETA
       </span>
     </NavLink>

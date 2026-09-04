@@ -17,3 +17,21 @@ body {
 #root {
   min-height: 100svh;
 }
+
+.dashboard-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #d6d3d1 transparent;
+}
+
+.dashboard-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+  background-color: #d6d3d1;
+  border-radius: 999px;
+}

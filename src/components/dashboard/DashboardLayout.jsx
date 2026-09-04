@@ -16,6 +16,8 @@ import BillingNavItem from '../sidebar/BillingNavItem'
 import AppearanceNavItem from '../sidebar/Appeareance'
 import SupportNavItem from '../sidebar/SupportNavItem'
 import TokenContextCard from '../sidebar/TokenContextCard'
+import HomeTopBar from '../sidebar/HomeTopBar'
+import MainTopBar from '../../pages/dashboard/MainTopBar'
 
 
 function SidebarGroup({ title, children, defaultOpen = true }) {
@@ -42,36 +44,42 @@ function SidebarGroup({ title, children, defaultOpen = true }) {
 function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-stone-100">
-      <aside className="sticky top-0 h-screen w-64 shrink-0 overflow-y-auto border-r border-stone-200 bg-stone-50 p-4">
-        <Search />
-        <nav className="flex flex-col gap-4" aria-label="Dashboard navigation">
-          <SidebarGroup title="Essentials">
-            <OverviewNavItem />
-            <MessagesNavItem />
-            <AIPersonalitiesNavItem />
-          </SidebarGroup>
+      <aside className="sticky top-0 flex h-screen w-70 shrink-0 flex-col overflow-hidden border-r border-stone-200 bg-stone-50">
+        <HomeTopBar />
+        <div className="dashboard-sidebar min-h-0 flex-1 overflow-y-auto p-4">
+          <Search />
+          <nav className="flex flex-col gap-4" aria-label="Dashboard navigation">
+            <SidebarGroup title="Essentials">
+              <OverviewNavItem />
+              <MessagesNavItem />
+              <AIPersonalitiesNavItem />
+            </SidebarGroup>
 
-          <SidebarGroup title="Work">
-            <JobTrackerNavItem />
-            <InterviewNavItem />
-            <FeedbackNavItem />
-            <ExportsNavItem />
-          </SidebarGroup>
+            <SidebarGroup title="Work">
+              <JobTrackerNavItem />
+              <InterviewNavItem />
+              <FeedbackNavItem />
+              <ExportsNavItem />
+            </SidebarGroup>
 
-          <SidebarGroup title="Account">
-            <SettingsNavItem />
-            <BillingNavItem />
-            <PrivacyNavItem />
-            <AppearanceNavItem />
-            <SupportNavItem />
-          </SidebarGroup>
-        </nav>
-        <div className="mt-4">
-          <TokenContextCard />
+            <SidebarGroup title="Account">
+              <SettingsNavItem />
+              <BillingNavItem />
+              <PrivacyNavItem />
+              <AppearanceNavItem />
+              <SupportNavItem />
+            </SidebarGroup>
+          </nav>
+          <div className="mt-4">
+            <TokenContextCard />
+          </div>
         </div>
       </aside>
-      <main className="min-w-0 flex-1">
-        <Outlet />
+      <main className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
+        <MainTopBar />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   )
