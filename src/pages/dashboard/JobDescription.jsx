@@ -1,22 +1,19 @@
-//function to normalize pasted text into a single paragraph, 
-// removing bullet points and extra whitespace
 function normalizeToParagraph(text) {
   return text
     .split("\n")
     .map((line) =>
       line
         .trim()
-        //I am using regex to remove bullet points, dashes, asterisks, 
+        //I am using regex to remove bullet points, dashes, asterisks,
         // and numbers followed by a period or parenthesis at the start of the line
         .replace(/^[\u2022\-\*\u2013]\s*/, "")
-        .replace(/^\d+[\.\)]\s*/, "")
+        .replace(/^\d+[\.\)]\s*/, ""),
     )
-    .filter(Boolean) 
+    .filter(Boolean)
     .join(" ") // join everything into one flowing paragraph
     .replace(/\s{2,}/g, " ") // collapse any accidental double spaces
     .trim();
 }
-
 
 function JobDescription({ value, onChange, maxLength = 10000 }) {
   const remaining = maxLength - value.length;
