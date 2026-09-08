@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "#components/*": ["./src/components/*"],
+      "#lib/*": ["./src/lib/*"],
+      "#ui/*": ["./src/components/ui/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

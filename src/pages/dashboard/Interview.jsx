@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Clock01Icon } from "@hugeicons/core-free-icons";
 import CVDropzone from "../dashboard/DragAndDrop";
 import JobDescription from "../dashboard/JobDescription";
 import DocumentList from "../dashboard/DocumentList";
 import CallControls from "../dashboard/CallContols";
+import LiveKitAvatar from "./LiveKitAvatar";
 import { RoomProvider } from "../../context/RoomContext";
+import { useRoom } from "../../context/RoomContext";
 import { useAuth } from "../../context/AuthContext";
+import TranscriptView from "./TranscriptView";
 
 import {
   decodeUserIdFromToken,
@@ -218,16 +223,10 @@ function Interview() {
     }
   };
 
-  // --------------------------------------------------
-  // UI
-  // --------------------------------------------------
-
   return (
     <div className="flex h-full min-h-0 w-full flex-col p-8 pb-0">
       <div className="flex min-h-0 flex-1 gap-8 lg:flex-row">
-        {/* =====================================================
-            LEFT COLUMN
-        ====================================================== */}
+    
 
         <div className="min-h-0 flex-1 overflow-y-auto py-4 pb-8">
           <h3 className="mb-6 text-lg font-semibold text-stone-950">
@@ -296,15 +295,7 @@ function Interview() {
           </div>
         </div>
 
-        {/* =====================================================
-            DIVIDER
-        ====================================================== */}
-
         <span className="hidden w-px scale-x-50 bg-stone-300 lg:block" />
-
-        {/* =====================================================
-    RIGHT COLUMN
-====================================================== */}
 
         <div className="flex min-h-0 flex-1 flex-col">
           <RoomProvider token={liveKitToken} serverUrl={liveKitServerUrl}>
@@ -312,17 +303,15 @@ function Interview() {
         INTERVIEW CONTENT
     ================================================== */}
 
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
               {sessionState === "setup" && (
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-sm text-stone-400">
-                    Your interview will appear here.
-                  </p>
+                <div className="shrink-0">
+                  <LiveKitAvatar state="idle" size="md" />
                 </div>
               )}
 
               {sessionState === "connecting" && (
-                <div className="flex h-full items-center justify-center">
+                <div className="flex min-h-[220px] shrink-0 items-center justify-center">
                   <div className="text-center">
                     <p className="text-sm font-medium text-stone-700">
                       Preparing your interview...
@@ -336,23 +325,17 @@ function Interview() {
               )}
 
               {sessionState === "live" && (
-                <div className="flex h-full items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-stone-700">
-                      Interview in progress
-                    </p>
-
-                    <p className="mt-1 text-sm text-stone-400">
-                      Your conversation will appear here.
-                    </p>
-                  </div>
+                <div className="shrink-0">
+                  <LiveKitAvatar state="speaking" size="md" />
                 </div>
               )}
-            </div>
 
-            {/* =================================================
-        CALL CONTROLS — ALWAYS VISIBLE
-    ================================================== */}
+              <InterviewStatus sessionState={sessionState} />
+
+              <div className="min-h-[220px] min-w-0 flex-1">
+                <TranscriptView />
+              </div>
+            </div>
 
             <div className="shrink-0 border-t border-stone-300 bg-stone-50">
               <CallControls onEndCall={handleEndCall} />
@@ -364,37 +347,52 @@ function Interview() {
   );
 }
 
-// ============================================================
-// LIVE INTERVIEW
-// ============================================================
+function InterviewStatus({ sessionState }) {
+  const { transcript } = useRoom();
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-function LiveInterview({ onEndCall }) {
+  useEffect(() => {
+    if (sessionState !== "live") {
+      setElapsedSeconds(0);
+      return undefined;
+    }
+
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [sessionState]);
+
+  const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
+  const seconds = String(elapsedSeconds % 60).padStart(2, "0");
+  const questionCount =
+    transcript.filter((entry) => entry.speaker === "mavis").length + 1;
+  const questionProgress = Math.min((questionCount / 10) * 100, 100);
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      {/* =====================================================
-          INTERVIEW / TRANSCRIPT
-      ====================================================== */}
-
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="text-center">
-            <p className="text-sm font-medium text-stone-700">
-              Interview in progress
-            </p>
-
-            <p className="mt-1 text-sm text-stone-400">
-              Your conversation will appear here.
-            </p>
-          </div>
-        </div>
+    <div className="flex shrink-0 items-center justify-between px-6 pb-4 text-xs font-medium text-stone-500">
+      <div className="flex items-center gap-2">
+        <HugeiconsIcon icon={Clock01Icon} size={16} strokeWidth={1.8} />
+        <span className="tabular-nums">{minutes}:{seconds}</span>
       </div>
 
-      {/* =====================================================
-          CALL CONTROLS
-      ====================================================== */}
-
-      <div className="shrink-0 border-t border-stone-300 bg-stone-50">
-        <CallControls onEndCall={onEndCall} />
+      <div className="flex items-center gap-3">
+        <span>Question {questionCount}</span>
+        <div
+          className="h-1.5 w-24 overflow-hidden rounded-full bg-stone-200"
+          role="progressbar"
+          aria-label={`Question progress: ${questionCount} of 10`}
+          aria-valuemin="0"
+          aria-valuemax="10"
+          aria-valuenow={Math.min(questionCount, 10)}
+        >
+          <div
+            className="h-full rounded-full bg-[#172554] transition-[width] duration-500"
+            style={{ width: `${questionProgress}%` }}
+          />
+        </div>
       </div>
     </div>
   );

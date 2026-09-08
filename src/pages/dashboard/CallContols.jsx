@@ -28,7 +28,7 @@ function CallControls({ onEndCall }) {
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-2 px-4 py-4 text-sm text-stone-700">
+    <div className="flex w-full flex-col items-center gap-2 px-8 py-4 text-sm text-stone-700">
       {error && (
         <p className="text-xs text-red-500">{error}</p>
       )}
