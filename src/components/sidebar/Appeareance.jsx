@@ -1,11 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Sun01Icon } from "@hugeicons/core-free-icons";
+import { UserIcon } from "@hugeicons/core-free-icons";
 
-function AppearanceNavItem() {
+function ProfileNavItem() {
   return (
     <NavLink
-      to="/dashboard/appearance"
+      to="/dashboard/profile"
       className={({ isActive }) =>
         `flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm no-underline ${
           isActive
@@ -14,10 +14,10 @@ function AppearanceNavItem() {
         }`
       }
     >
-      <HugeiconsIcon icon={Sun01Icon} size={17} />
-      <span className="flex-1">Appearance</span>
+      <HugeiconsIcon icon={UserIcon} size={17} />
+      <span className="flex-1">Profile</span>
     </NavLink>
   );
 }
 
-export default AppearanceNavItem;
+export default ProfileNavItem;

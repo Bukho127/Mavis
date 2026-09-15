@@ -16,6 +16,7 @@ function CallControls({ onEndCall }) {
     isMuted,
     isVideoEnabled,
     error,
+    transcript,
     toggleMute,
     toggleVideo,
     disconnect,
@@ -24,7 +25,7 @@ function CallControls({ onEndCall }) {
   const handleEndCall = () => {
     disconnect();
 
-    onEndCall?.();
+    onEndCall?.(transcript);
   };
 
   return (

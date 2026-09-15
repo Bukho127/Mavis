@@ -30,6 +30,7 @@ const dashboardPages = [
   { path: '/dashboard/settings', label: 'Settings', icon: Settings01Icon },
   { path: '/dashboard/billing', label: 'Billing & Plan', icon: Wallet01Icon },
   { path: '/dashboard/appearance', label: 'Appearance', icon: Sun01Icon },
+  { path: '/dashboard/profile', label: 'Profile', icon: UserIcon },
   { path: '/dashboard/support', label: 'Support', icon: HelpCircleIcon },
 ]
 

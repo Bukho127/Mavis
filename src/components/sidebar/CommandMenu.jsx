@@ -148,9 +148,9 @@ const CommandMenu = ({ open, setOpen }) => {
               <p className="mb-2 text-sm text-stone-400">
                 {normalizedQuery ? "Matching interviews" : "Recent interviews"}
               </p>
-              {filteredInterviews.map((interview) => (
+              {filteredInterviews.map((interview, index) => (
                 <button
-                  key={interview.id}
+                  key={interview.id || interview._id || `${interview.role}-${interview.date}-${index}`}
                   type="button"
                   onClick={() => handleSelectInterview(interview)}
                   className="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-left text-sm text-stone-950 transition-colors hover:bg-stone-100"

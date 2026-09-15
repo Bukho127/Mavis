@@ -6,8 +6,8 @@ function normalizeToParagraph(text) {
         .trim()
         //I am using regex to remove bullet points, dashes, asterisks,
         // and numbers followed by a period or parenthesis at the start of the line
-        .replace(/^[\u2022\-\*\u2013]\s*/, "")
-        .replace(/^\d+[\.\)]\s*/, ""),
+        .replace(/^[\u2022*\u2013-]\s*/, "")
+        .replace(/^\d+[.)]\s*/, ""),
     )
     .filter(Boolean)
     .join(" ") // join everything into one flowing paragraph
@@ -15,7 +15,7 @@ function normalizeToParagraph(text) {
     .trim();
 }
 
-function JobDescription({ value, onChange, maxLength = 10000 }) {
+function JobDescription({ value, onChange, maxLength = 10000, disabled = false }) {
   const remaining = maxLength - value.length;
 
   const handlePaste = (e) => {
@@ -55,9 +55,10 @@ function JobDescription({ value, onChange, maxLength = 10000 }) {
         required
         onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
         onPaste={handlePaste}
+        disabled={disabled}
         placeholder="Paste the job description you're preparing for..."
         rows={8}
-        className="h-[150px] w-full resize-none rounded-lg border border-stone-300 bg-white p-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[#4A7FF8] focus:outline-none"
+        className="h-[150px] w-full resize-none rounded-lg border border-stone-300 bg-white p-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[#4A7FF8] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
       />
     </div>
   );

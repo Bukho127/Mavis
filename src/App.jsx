@@ -22,6 +22,7 @@ import Settings from './pages/dashboard/Settings'
 import Billing from './pages/dashboard/Billing'
 import Appearance from './pages/dashboard/Appearance'
 import Support from './pages/dashboard/Support'
+import Profile from './pages/dashboard/Profile'
 
 function AppLayout() {
   const location = useLocation()
@@ -71,6 +72,7 @@ function AppLayout() {
               <Route path="settings" element={<Settings />} />
               <Route path="billing" element={<Billing />} />
               <Route path="appearance" element={<Appearance />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="support" element={<Support />} />
             </Route>
           </Route>

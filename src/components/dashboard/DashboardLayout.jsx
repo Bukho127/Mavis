@@ -13,7 +13,7 @@ import ExportsNavItem from '../sidebar/ExportsNavItem'
 import PrivacyNavItem from '../sidebar/PrivacyNavItem'
 import SettingsNavItem from '../sidebar/SettingsNavItem'
 import BillingNavItem from '../sidebar/BillingNavItem'
-import AppearanceNavItem from '../sidebar/Appeareance'
+import ProfileNavItem from '../sidebar/Appeareance'
 import SupportNavItem from '../sidebar/SupportNavItem'
 import TokenContextCard from '../sidebar/TokenContextCard'
 import HomeTopBar from '../sidebar/HomeTopBar'
@@ -66,7 +66,7 @@ function DashboardLayout() {
               <SettingsNavItem />
               <BillingNavItem />
               <PrivacyNavItem />
-              <AppearanceNavItem />
+              <ProfileNavItem />
               <SupportNavItem />
             </SidebarGroup>
           </nav>

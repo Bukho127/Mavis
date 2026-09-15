@@ -192,10 +192,14 @@ export async function getInterviewById(interviewId, token) {
   return res.json();
 }
 
-export async function endInterview(interviewId, token) {
+export async function endInterview(interviewId, token, transcript = []) {
   const res = await fetch(`/interviews/${interviewId}/end`, {
     method: "PUT",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ transcript }),
   });
 
   if (!res.ok) {
