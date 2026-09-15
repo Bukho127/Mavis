@@ -270,7 +270,7 @@ function FeedbackDocument({ interview }) {
 
   return (
     <article className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:px-10">
-      <header className="border-b border-stone-200 bg-stone-50 px-7 py-6 sm:px-9">
+      <header className="border-b border-stone-200 bg-stone-50 px-7 py-6 sm:px-9 mb-3">
         <p className="text-sm font-medium text-stone-500">
           Mavis feedback brief
         </p>
@@ -351,7 +351,7 @@ function FeedbackDocument({ interview }) {
             ))}
           </div>
         ) : (
-          <p className="rounded-md border border-stone-200 bg-stone-50 p-4 text-sm text-stone-500">
+          <p className="rounded-md border border-stone-200 bg-stone-50 p-4 text-sm text-stone-500 mb-4">
             No per-answer evaluations were saved for this session.
           </p>
         )}
@@ -366,7 +366,7 @@ function ScorePanel({ score, evaluations }) {
   const status = scoreToStatus(score);
 
   return (
-    <div className="grid min-h-64 grid-cols-[64px_minmax(0,1fr)] gap-5 rounded-lg border border-stone-200 p-5">
+    <div className="grid min-h-64 grid-cols-[64px_minmax(0,1fr)] gap-5 rounded-lg border border-stone-200 p-5 mb-3">
       <div className="flex flex-col items-center gap-3">
         <div className="relative h-full min-h-48 w-4 overflow-hidden rounded-full bg-stone-200">
           <div
@@ -377,7 +377,7 @@ function ScorePanel({ score, evaluations }) {
         <span className="text-[11px] font-medium text-stone-500">score</span>
       </div>
 
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-col justify-between ">
         <div>
           <p className="text-sm font-medium text-stone-500">
             Overall readiness
@@ -436,7 +436,7 @@ function MetricCard({ label, score }) {
   const width = value === null ? 0 : Math.max(0, Math.min(100, value));
 
   return (
-    <div className="rounded-lg border border-stone-200 p-4">
+    <div className="rounded-lg border border-stone-200 p-4 mb-3">
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-sm font-semibold leading-5 text-stone-950">
           {label}
@@ -465,7 +465,7 @@ function MetricCard({ label, score }) {
 
 function FeedbackList({ title, items = [], positive = false }) {
   return (
-    <div className="rounded-lg border border-stone-200 p-5">
+    <div className="rounded-lg border border-stone-200 p-5 mb-3">
       <h2 className="text-lg font-semibold text-stone-950">{title}</h2>
       {items.length ? (
         <ul className="mt-4 space-y-3">
