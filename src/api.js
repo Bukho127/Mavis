@@ -1,4 +1,3 @@
-
 const API_BASE_URL = "http://localhost:3000";
 
 export function decodeUserIdFromToken(token) {
@@ -88,7 +87,6 @@ export async function streamMarketingChat(message, onChunkReceived) {
   }
 }
 
-
 export async function fetchAllInterviews(token) {
   return request("/interviews", {
     headers: {
@@ -105,7 +103,13 @@ export async function fetchUserProfile(userId, token) {
   });
 }
 
-export function uploadUserDocument({ token, userId, file, documentType, onProgress }) {
+export function uploadUserDocument({
+  token,
+  userId,
+  file,
+  documentType,
+  onProgress,
+}) {
   return new Promise((resolve, reject) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -146,9 +150,12 @@ export async function deleteUserDocument(documentId, token) {
   });
 }
 
-// api.js — add these alongside your existing functions
-
-export async function startInterview({ token, jobTitle, jobDescription, persona }) {
+export async function startInterview({
+  token,
+  jobTitle,
+  jobDescription,
+  persona,
+}) {
   const res = await fetch("/interviews", {
     method: "POST",
     headers: {
@@ -164,6 +171,44 @@ export async function startInterview({ token, jobTitle, jobDescription, persona 
   }
 
   return res.json();
+}
+
+export async function getQuota(userId, token) {
+  const res = await fetch(`/users/${userId}/quota`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const body = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(body.error || body.message || "Failed to fetch quota");
+  }
+
+  return body;
+}
+
+export async function incrementTokenUsage(userId, totalTokens, internalApiKey) {
+  const res = await fetch(`/users/${userId}/token-usage`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "x-internal-api-key": internalApiKey,
+    },
+    body: JSON.stringify({ totalTokens }),
+  });
+
+  const body = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      body.error || body.message || "Failed to update token usage",
+    );
+  }
+
+  return body;
 }
 
 export async function getMyInterviews(token) {
@@ -223,7 +268,6 @@ export async function deleteInterview(interviewId, token) {
 
   return res.json();
 }
-
 
 /**
  * Register a new user

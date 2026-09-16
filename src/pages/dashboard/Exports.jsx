@@ -434,7 +434,7 @@ function Exports() {
                 </button>
 
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="rounded bg-stone-100 px-2 py-0.5 text-[11px] uppercase tracking-wide text-stone-500">
+                  <span className="rounded bg-green-100 px-2 py-0.5 text-[11px] text-green-900 uppercase tracking-wide">
                     {documentItem.standing || documentItem.status || "Completed"}
                   </span>
 
