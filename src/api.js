@@ -190,26 +190,6 @@ export async function getQuota(userId, token) {
   return body;
 }
 
-export async function incrementTokenUsage(userId, totalTokens, internalApiKey) {
-  const res = await fetch(`/users/${userId}/token-usage`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "x-internal-api-key": internalApiKey,
-    },
-    body: JSON.stringify({ totalTokens }),
-  });
-
-  const body = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    throw new Error(
-      body.error || body.message || "Failed to update token usage",
-    );
-  }
-
-  return body;
-}
 
 export async function getMyInterviews(token) {
   const res = await fetch("/interviews", {
