@@ -4,6 +4,7 @@ import {
   BellIcon,
   Briefcase01Icon,
   ChatFeedback01Icon,
+  ChevronRightIcon,
   Download05Icon,
   FileSecurityIcon,
   GridViewIcon,
@@ -45,17 +46,32 @@ function getCurrentPage(pathname) {
 function MainTopBar() {
   const location = useLocation()
   const currentPage = getCurrentPage(location.pathname)
+  const isSettingsPage = location.pathname === '/dashboard/settings'
 
   return (
     <header className="sticky top-0 z-10 flex h-12 w-full shrink-0 items-center justify-between border-b border-stone-200 px-5">
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-700">
-          <HugeiconsIcon icon={currentPage.icon} size={18} />
-        </span>
-        <h1 className="truncate text-md font text-stone-900">
-          {currentPage.label}
-        </h1>
-      </div>
+      {isSettingsPage ? (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-700">
+            <HugeiconsIcon icon={Settings01Icon} size={18} />
+          </span>
+          <span className="truncate text-md text-stone-900">Settings</span>
+          <HugeiconsIcon icon={ChevronRightIcon} size={16} className="text-stone-500" />
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-700">
+            <HugeiconsIcon icon={UserIcon} size={18} />
+          </span>
+          <h1 className="truncate text-md text-stone-900">Account</h1>
+        </div>
+      ) : (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-700">
+            <HugeiconsIcon icon={currentPage.icon} size={18} />
+          </span>
+          <h1 className="truncate text-md font text-stone-900">
+            {currentPage.label}
+          </h1>
+        </div>
+      )}
 
       <div className="flex items-center gap-4 px-3">
         <button

@@ -1,5 +1,11 @@
 const API_BASE_URL = "http://localhost:3000";
 
+export function resolveApiUrl(value) {
+  if (!value) return null;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
+}
+
 export function decodeUserIdFromToken(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -96,11 +102,70 @@ export async function fetchAllInterviews(token) {
 }
 
 export async function fetchUserProfile(userId, token) {
-  return request(`/users/${userId}`, {
+  const data = await request(`/users/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+
+  return normalizeUserProfileResponse(data);
+}
+
+export async function updateUserProfile(userId, token, updates) {
+  const data = await request(`/users/${userId}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  return normalizeUserProfileResponse(data);
+}
+
+export async function uploadUserAvatar({ token, file, method = "POST" }) {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await fetch(`${API_BASE_URL}/users/me/avatar`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Avatar upload failed.");
+  }
+
+  return normalizeUserProfileResponse(data);
+}
+
+export async function deleteUserAvatar(token) {
+  const data = await request("/users/me/avatar", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return normalizeUserProfileResponse(data);
+}
+
+export async function deleteUserProfile(token) {
+  return request("/users/me", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+function normalizeUserProfileResponse(data) {
+  return data.user || data.profile || data.data || data;
 }
 
 export function uploadUserDocument({
@@ -112,12 +177,17 @@ export function uploadUserDocument({
 }) {
   return new Promise((resolve, reject) => {
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("userId", userId);
-    formData.append("documentType", documentType);
+    const isCvUpload = documentType === "cv";
+    const endpoint = isCvUpload ? "/users/me/cv" : "/documents";
+
+    formData.append(isCvUpload ? "cv" : "file", file);
+    if (!isCvUpload) {
+      formData.append("userId", userId);
+      formData.append("documentType", documentType);
+    }
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${API_BASE_URL}/documents`);
+    xhr.open("POST", `${API_BASE_URL}${endpoint}`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
     xhr.upload.onprogress = (event) => {

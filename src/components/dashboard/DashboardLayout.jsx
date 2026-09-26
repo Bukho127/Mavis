@@ -11,9 +11,7 @@ import FeedbackNavItem from '../sidebar/FeedbackNavItem'
 import AIPersonalitiesNavItem from '../sidebar/AIPersonalitiesNavItem'
 import ExportsNavItem from '../sidebar/ExportsNavItem'
 import PrivacyNavItem from '../sidebar/PrivacyNavItem'
-import SettingsNavItem from '../sidebar/SettingsNavItem'
 import BillingNavItem from '../sidebar/BillingNavItem'
-import ProfileNavItem from '../sidebar/Appeareance'
 import SupportNavItem from '../sidebar/SupportNavItem'
 import TokenContextCard from '../sidebar/TokenContextCard'
 import HomeTopBar from '../sidebar/HomeTopBar'
@@ -63,10 +61,8 @@ function DashboardLayout() {
             </SidebarGroup>
 
             <SidebarGroup title="Account">
-              <SettingsNavItem />
               <BillingNavItem />
               <PrivacyNavItem />
-              <ProfileNavItem />
               <SupportNavItem />
             </SidebarGroup>
           </nav>
