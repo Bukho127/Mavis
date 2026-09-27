@@ -8,9 +8,15 @@ import {
   CheckmarkCircle02Icon,
   Loading03Icon,
 } from "@hugeicons/core-free-icons";
-import { decodeUserIdFromToken, fetchAllInterviews, getQuota } from "../../api";
+import {
+  decodeUserIdFromToken,
+  deleteInterview,
+  fetchAllInterviews,
+  getQuota,
+} from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { isCompletedInterview } from "../../lib/interviewStatus";
+import { getInterviewId } from "../../lib/feedbackExport";
 import OverviewStatCard from "../../components/dashboard/overview/OverviewStatCard";
 import TokenUsageChart from "../../components/dashboard/overview/TokenUsageChart";
 import RecentFeedbackTable from "../../components/dashboard/overview/RecentFeedbackTable";
@@ -84,6 +90,7 @@ function Overview() {
   const [quota, setQuota] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -165,6 +172,26 @@ function Overview() {
     (!hasDailyTokenBreakdown ||
       !tokenChartData.some((day) => day.tokens > 0));
 
+  const handleDeleteFeedback = async (interview) => {
+    const interviewId = getInterviewId(interview);
+    if (!interviewId || deletingId) return;
+
+    const confirmed = window.confirm("Delete this interview feedback?");
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(interviewId);
+      await deleteInterview(interviewId, token);
+      setInterviews((currentInterviews) =>
+        currentInterviews.filter((item) => getInterviewId(item) !== interviewId),
+      );
+    } catch (err) {
+      setError(err.message || "Could not delete this feedback.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <section className="min-h-full bg-stone-100 px-8 py-8">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -227,6 +254,8 @@ function Overview() {
         <RecentFeedbackTable
           interviews={completedInterviews.slice(0, 5)}
           allInterviews={completedInterviews}
+          deletingId={deletingId}
+          onDeleteFeedback={handleDeleteFeedback}
         />
       </div>
     </section>

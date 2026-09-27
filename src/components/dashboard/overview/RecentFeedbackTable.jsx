@@ -2,8 +2,13 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete02Icon, Download05Icon } from "@hugeicons/core-free-icons";
 import {
   getInterviewStatusLabel,
+  hasCompletedFeedback,
   isCompletedInterview,
 } from "../../../lib/interviewStatus";
+import {
+  downloadFeedbackDocument,
+  getInterviewId,
+} from "../../../lib/feedbackExport";
 
 function scoreLabel(score) {
   if (typeof score !== "number") return "Pending";
@@ -69,7 +74,12 @@ function formatDate(value) {
   });
 }
 
-function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
+function RecentFeedbackTable({
+  interviews = [],
+  allInterviews = interviews,
+  deletingId = null,
+  onDeleteFeedback,
+}) {
   return (
     <section>
       <h2 className="mb-3 text-base font-semibold text-stone-950">Recent feedback</h2>
@@ -86,14 +96,16 @@ function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
         {interviews.length ? (
           <div className="divide-y divide-stone-100">
             {interviews.map((interview) => {
+              const interviewId = getInterviewId(interview);
               const isCompleted = isCompletedInterview(interview);
+              const canDownload = hasCompletedFeedback(interview);
               const score = isCompleted ? interview.feedback?.overallScore : null;
               const similarRoleInterviewCount = countSimilarRoleInterviews(interview, allInterviews);
               const interviewLabel = similarRoleInterviewCount === 1 ? "person" : "people";
 
               return (
                 <div
-                  key={interview._id || interview.id}
+                  key={interviewId}
                   className="grid grid-cols-[minmax(180px,1.5fr)_120px_140px_140px_120px] items-center gap-4 px-4 py-3 text-sm"
                 >
                   <div>
@@ -136,6 +148,8 @@ function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
                   <div className="flex justify-end gap-2">
                     <button
                       type="button"
+                      onClick={() => downloadFeedbackDocument(interview)}
+                      disabled={!canDownload}
                       className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-200 text-stone-600 hover:bg-stone-50"
                       aria-label="Download feedback"
                     >
@@ -143,7 +157,9 @@ function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
                     </button>
                     <button
                       type="button"
-                      className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-200 text-rose-500 hover:bg-rose-50"
+                      onClick={() => onDeleteFeedback?.(interview)}
+                      disabled={!interviewId || deletingId === interviewId}
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-200 text-rose-500 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label="Delete feedback"
                     >
                       <HugeiconsIcon icon={Delete02Icon} size={16} />
