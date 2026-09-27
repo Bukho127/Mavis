@@ -6,6 +6,7 @@ import {
   Cancel01Icon,
   FileSecurityIcon,
   Loading03Icon,
+  Logout01Icon,
   Mail01Icon,
   Settings01Icon,
   UserIcon,
@@ -54,7 +55,7 @@ function getAvatarUrl(profile) {
 }
 
 function InitialsGenerator() {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const navigate = useNavigate();
   const popoverRef = useRef(null);
   const [profile, setProfile] = useState(null);
@@ -133,6 +134,11 @@ function InitialsGenerator() {
     setIsOpen(false);
     navigate("/dashboard/settings");
   };
+  const handleSignOut = () => {
+    setIsOpen(false);
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div ref={popoverRef} className="relative">
@@ -166,11 +172,8 @@ function InitialsGenerator() {
         >
           <div className="flex items-start justify-between border-b border-stone-100 px-4 py-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
-                Profile
-              </p>
-              <p className="mt-1 text-sm font-semibold text-stone-950">
-                Mavis account
+              <p className="mt-1 text-sm text-stone-950">
+                Account
               </p>
             </div>
 
@@ -186,7 +189,7 @@ function InitialsGenerator() {
 
           <div className="p-3">
             <div className="mb-3 flex items-center gap-3 rounded-lg bg-stone-50 p-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#00897B] font-semibold text-white">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#00897B] text-white">
                 {loading ? (
                   <HugeiconsIcon icon={Loading03Icon} size={18} className="animate-spin" />
                 ) : avatarUrl ? (
@@ -200,7 +203,7 @@ function InitialsGenerator() {
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-stone-950">
+                <p className="truncate text-sm text-stone-950">
                   {loading ? "Loading profile" : fullName}
                 </p>
                 <p className="mt-0.5 truncate text-xs text-stone-500">
@@ -249,11 +252,26 @@ function InitialsGenerator() {
                 <HugeiconsIcon icon={Settings01Icon} size={16} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-medium text-stone-900">
+                <span className="block text-sm text-stone-900">
                   Settings
                 </span>
                 <span className="block truncate text-xs text-stone-400">
                   Manage profile preferences
+                </span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="mt-1 flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-red-600 hover:bg-red-50"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                <HugeiconsIcon icon={Logout01Icon} size={16} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm">
+                  Sign out
                 </span>
               </span>
             </button>
@@ -271,8 +289,8 @@ function ProfilePopoverRow({ icon, label, value }) {
         <HugeiconsIcon icon={icon} size={16} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[11px] font-medium text-stone-400">{label}</span>
-        <span className="block truncate text-sm font-medium text-stone-900">
+        <span className="block text-[11px] text-stone-400">{label}</span>
+        <span className="block truncate text-sm text-stone-900">
           {value}
         </span>
       </span>
