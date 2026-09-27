@@ -8,6 +8,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { deleteInterview, fetchAllInterviews } from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import {
+  getInterviewStatusLabel,
+  isCompletedInterview,
+} from "../../lib/interviewStatus";
 
 function getInterviewId(interview) {
   return interview?._id || interview?.id || interview?.interviewId;
@@ -81,6 +85,10 @@ function normalizeTranscript(transcript) {
 }
 
 function getFeedbackText(interview) {
+  if (!isCompletedInterview(interview)) {
+    return "No evaluation is available because this interview was not completed.";
+  }
+
   return (
     interview?.feedback ||
     interview?.summary ||
@@ -96,7 +104,7 @@ function createDocumentHtml(interview) {
 
   const role = escapeHtml(getInterviewRole(interview));
   const date = escapeHtml(formatDate(getInterviewDate(interview)));
-  const standing = escapeHtml(interview.standing || interview.status || "Completed");
+  const standing = escapeHtml(interview.standing || getInterviewStatusLabel(interview));
   const feedback = escapeHtml(getFeedbackText(interview));
   const transcript = normalizeTranscript(interview.transcript);
 
@@ -225,11 +233,13 @@ function Exports() {
 
       try {
         const data = await fetchAllInterviews(token);
-        const normalizedDocuments = normalizeCollection(data).sort((a, b) => {
-          const first = new Date(getInterviewDate(a) || 0).getTime();
-          const second = new Date(getInterviewDate(b) || 0).getTime();
-          return second - first;
-        });
+        const normalizedDocuments = normalizeCollection(data)
+          .filter(isCompletedInterview)
+          .sort((a, b) => {
+            const first = new Date(getInterviewDate(a) || 0).getTime();
+            const second = new Date(getInterviewDate(b) || 0).getTime();
+            return second - first;
+          });
 
         if (!isMounted) return;
 
@@ -435,7 +445,7 @@ function Exports() {
 
                 <div className="mt-3 flex items-center justify-between">
                   <span className="rounded bg-green-100 px-2 py-0.5 text-[11px] text-green-900 uppercase tracking-wide">
-                    {documentItem.standing || documentItem.status || "Completed"}
+                    {documentItem.standing || getInterviewStatusLabel(documentItem)}
                   </span>
 
                   <button

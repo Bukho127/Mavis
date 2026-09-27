@@ -26,6 +26,10 @@ export default defineConfig({
         target: "http://localhost:3000", // or 5000, whichever port is actually active
         changeOrigin: true,
       },
+      "/job-applications": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
     },
   },
 });

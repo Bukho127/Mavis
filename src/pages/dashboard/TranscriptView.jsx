@@ -2,17 +2,17 @@ import { useEffect, useRef } from "react";
 import { useRoom } from "../../context/RoomContext";
 
 function TranscriptView() {
-  const { transcript } = useRoom();
+  const { displayTranscript } = useRoom();
   const bottomRef = useRef(null);
 
   // Auto-scroll to the newest message as the conversation grows.
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [transcript]);
+  }, [displayTranscript]);
 
-  if (transcript.length === 0) {
+  if (displayTranscript.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center border-t border-stone-300 px-4 py-4 text-center">
+      <div className="flex h-full items-center justify-center px-5 py-6 text-center">
         <p className="text-sm text-stone-400">
           Your conversation will appear here.
         </p>
@@ -21,8 +21,8 @@ function TranscriptView() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-y-auto px-4 py-4">
-      {transcript.map((entry) => {
+    <div className="flex h-full flex-col gap-3 overflow-y-auto bg-white px-5 py-5">
+      {displayTranscript.map((entry) => {
         const isCandidate = entry.speaker === "candidate";
 
         return (
@@ -31,11 +31,11 @@ function TranscriptView() {
             className={`flex ${isCandidate ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 text-sm ${
+              className={`max-w-[84%] rounded-lg px-4 py-3 text-sm leading-6 shadow-sm ${
                 isCandidate
                   ? "bg-[#4A7FF8] text-white"
-                  : "bg-stone-100 text-stone-900"
-              }`}
+                  : "border border-stone-200 bg-stone-50 text-stone-900"
+              } ${entry.final ? "" : "opacity-70"}`}
             >
               <p className="mb-1 text-xs font-semibold opacity-70">
                 {isCandidate ? "You" : "Mavis"}

@@ -18,10 +18,13 @@ const RoomContext = createContext(null);
 export function RoomProvider({
   token,
   serverUrl,
+  onInterrupted,
   children,
 }) {
   const roomRef = useRef(null);
   const audioContainerRef = useRef(null);
+  const interimTranscriptRef = useRef(new Map());
+  const committedTranscriptIdsRef = useRef(new Set());
 
   const [isConnected, setIsConnected] =
     useState(false);
@@ -42,8 +45,9 @@ export function RoomProvider({
     useState(null);
 
   // Live transcript, rendered as a message-bubble conversation. Each entry:
-  // { id, speaker: "candidate" | "mavis", text, timestamp }
+  // { id, speaker: "candidate" | "mavis", text, timestamp, final }
   const [transcript, setTranscript] = useState([]);
+  const [interimTranscript, setInterimTranscript] = useState([]);
 
   useEffect(() => {
     if (!token || !serverUrl) {
@@ -54,9 +58,15 @@ export function RoomProvider({
 
     roomRef.current = room;
 
+    let isCleaningUp = false;
+
     const handleDisconnected = () => {
       setIsConnected(false);
       setLocalAudioTrack(null);
+
+      if (!isCleaningUp) {
+        onInterrupted?.();
+      }
     };
 
     // Remote audio tracks (e.g. Mavis's voice) are delivered by LiveKit but
@@ -81,70 +91,70 @@ export function RoomProvider({
       setCanPlaybackAudio(room.canPlaybackAudio);
     };
 
-    const processedTranscriptStreams = new Set();
-    const recentTranscriptMessages = new Map();
+    const syncInterimTranscript = () => {
+      setInterimTranscript(
+        [...interimTranscriptRef.current.values()].sort(
+          (first, second) => first.order - second.order,
+        ),
+      );
+    };
+
+    const normalizeTranscriptText = (text) => text?.trim().replace(/\s+/g, " ") || "";
+
+    const createTranscriptEntry = (segment, participant, isFinal) => {
+      const normalizedText = normalizeTranscriptText(segment.text);
+      if (!normalizedText) return null;
+
+      const isLocalCandidate =
+        participant?.identity === room.localParticipant.identity;
+
+      return {
+        id: segment.id,
+        speaker: isLocalCandidate ? "candidate" : "mavis",
+        text: normalizedText,
+        timestamp: new Date().toISOString(),
+        final: isFinal,
+        order:
+          segment.firstReceivedTime ||
+          segment.lastReceivedTime ||
+          Date.now(),
+      };
+    };
+
+    const handleTranscriptionReceived = (segments, participant) => {
+      segments.forEach((segment) => {
+        if (!segment?.id) return;
+
+        const entry = createTranscriptEntry(segment, participant, segment.final);
+
+        if (!segment.final) {
+          if (!entry) {
+            interimTranscriptRef.current.delete(segment.id);
+          } else {
+            interimTranscriptRef.current.set(segment.id, entry);
+          }
+
+          syncInterimTranscript();
+          return;
+        }
+
+        interimTranscriptRef.current.delete(segment.id);
+        syncInterimTranscript();
+
+        if (!entry || committedTranscriptIdsRef.current.has(segment.id)) {
+          return;
+        }
+
+        committedTranscriptIdsRef.current.add(segment.id);
+        setTranscript((prev) => [...prev, { ...entry, final: true }]);
+      });
+    };
 
     room.on(RoomEvent.Disconnected, handleDisconnected);
     room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed);
     room.on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed);
     room.on(RoomEvent.AudioPlaybackStatusChanged, handleAudioPlaybackChanged);
-
-    // The agent's inputAudioTranscription/outputAudioTranscription settings
-    // publish both sides of the conversation as LiveKit text streams on the
-    // "lk.transcription" topic. Each stream corresponds to one finished turn
-    // of speech, so we read it fully, then add it as one chat bubble.
-    room.registerTextStreamHandler("lk.transcription", async (reader, participantInfo) => {
-      try {
-        const text = await reader.readAll();
-        const normalizedText = text?.trim().replace(/\s+/g, " ");
-        if (!normalizedText) return;
-
-        const streamId =
-          reader.info?.id ||
-          reader.info?.streamId ||
-          reader.id;
-
-        if (streamId && processedTranscriptStreams.has(streamId)) {
-          return;
-        }
-
-        if (streamId) {
-          processedTranscriptStreams.add(streamId);
-        }
-
-        const isLocalCandidate =
-          participantInfo.identity === room.localParticipant.identity;
-        const speaker = isLocalCandidate ? "candidate" : "mavis";
-        const messageKey = `${participantInfo.identity}:${speaker}:${normalizedText}`;
-        const now = Date.now();
-        const lastSeenAt = recentTranscriptMessages.get(messageKey);
-
-        // Some LiveKit/agent configurations can replay a completed stream.
-        // Ignore only an immediate exact replay so repeated answers later remain valid.
-        if (lastSeenAt && now - lastSeenAt < 5000) {
-          return;
-        }
-
-        recentTranscriptMessages.set(messageKey, now);
-        for (const [key, timestamp] of recentTranscriptMessages) {
-          if (now - timestamp >= 10000) {
-            recentTranscriptMessages.delete(key);
-          }
-        }
-
-        setTranscript((prev) => [
-          ...prev,
-          {
-            id: `${participantInfo.identity}-${Date.now()}-${Math.random()}`,
-            speaker,
-            text: normalizedText,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
-      } catch (err) {
-        console.error("Failed to read transcription stream:", err);
-      }
-    });
+    room.on(RoomEvent.TranscriptionReceived, handleTranscriptionReceived);
 
     let cancelled = false;
 
@@ -210,11 +220,13 @@ export function RoomProvider({
 
     return () => {
       cancelled = true;
+      isCleaningUp = true;
 
       room.off(RoomEvent.Disconnected, handleDisconnected);
       room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed);
       room.off(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed);
       room.off(RoomEvent.AudioPlaybackStatusChanged, handleAudioPlaybackChanged);
+      room.off(RoomEvent.TranscriptionReceived, handleTranscriptionReceived);
 
       room.disconnect();
 
@@ -228,8 +240,11 @@ export function RoomProvider({
       setLocalAudioTrack(null);
       setCanPlaybackAudio(true);
       setTranscript([]);
+      setInterimTranscript([]);
+      interimTranscriptRef.current.clear();
+      committedTranscriptIdsRef.current.clear();
     };
-  }, [token, serverUrl]);
+  }, [token, serverUrl, onInterrupted]);
 
   const toggleMute = useCallback(
     async () => {
@@ -324,6 +339,7 @@ export function RoomProvider({
     canPlaybackAudio,
     error,
     transcript,
+    displayTranscript: [...transcript, ...interimTranscript],
     toggleMute,
     toggleVideo,
     disconnect,
@@ -339,6 +355,7 @@ export function RoomProvider({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useRoom() {
   const context = useContext(RoomContext);
 

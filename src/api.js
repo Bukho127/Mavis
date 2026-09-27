@@ -16,12 +16,14 @@ export function decodeUserIdFromToken(token) {
 }
 
 async function request(endpoint, options = {}) {
+  const { headers, ...requestOptions } = options;
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...requestOptions,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers,
+      ...headers,
     },
-    ...options,
   });
 
   const data = await response.json().catch(() => ({}));
@@ -220,6 +222,61 @@ export async function deleteUserDocument(documentId, token) {
   });
 }
 
+function normalizeJobApplicationCollection(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.jobApplications)) return data.jobApplications;
+  if (Array.isArray(data?.applications)) return data.applications;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
+function normalizeJobApplicationResponse(data) {
+  return data?.jobApplication || data?.application || data?.data || data;
+}
+
+export async function fetchJobApplications(token) {
+  const data = await request("/job-applications", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return normalizeJobApplicationCollection(data);
+}
+
+export async function createJobApplication(token, application) {
+  const data = await request("/job-applications", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(application),
+  });
+
+  return normalizeJobApplicationResponse(data);
+}
+
+export async function updateJobApplication(applicationId, token, updates) {
+  const data = await request(`/job-applications/${applicationId}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  return normalizeJobApplicationResponse(data);
+}
+
+export async function deleteJobApplication(applicationId, token) {
+  return request(`/job-applications/${applicationId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export async function startInterview({
   token,
   jobTitle,
@@ -259,7 +316,6 @@ export async function getQuota(userId, token) {
 
   return body;
 }
-
 
 export async function getMyInterviews(token) {
   const res = await fetch("/interviews", {

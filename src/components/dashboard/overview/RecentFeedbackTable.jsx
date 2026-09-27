@@ -1,5 +1,9 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete02Icon, Download05Icon } from "@hugeicons/core-free-icons";
+import {
+  getInterviewStatusLabel,
+  isCompletedInterview,
+} from "../../../lib/interviewStatus";
 
 function scoreLabel(score) {
   if (typeof score !== "number") return "Pending";
@@ -82,7 +86,8 @@ function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
         {interviews.length ? (
           <div className="divide-y divide-stone-100">
             {interviews.map((interview) => {
-              const score = interview.feedback?.overallScore;
+              const isCompleted = isCompletedInterview(interview);
+              const score = isCompleted ? interview.feedback?.overallScore : null;
               const similarRoleInterviewCount = countSimilarRoleInterviews(interview, allInterviews);
               const interviewLabel = similarRoleInterviewCount === 1 ? "person" : "people";
 
@@ -96,8 +101,12 @@ function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
                       {interview.jobTitle || interview.role || "Untitled interview"}
                     </p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-stone-500">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      {interview.status || "completed"}
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          isCompleted ? "bg-emerald-500" : "bg-stone-300"
+                        }`}
+                      />
+                      {getInterviewStatusLabel(interview)}
                     </p>
                   </div>
 
@@ -113,10 +122,14 @@ function RecentFeedbackTable({ interviews = [], allInterviews = interviews }) {
 
                   <div>
                     <p className="text-sm font-medium text-stone-700">
-                      {getStanding(score, similarRoleInterviewCount)}
+                      {isCompleted
+                        ? getStanding(score, similarRoleInterviewCount)
+                        : "No evaluation"}
                     </p>
                     <p className="mt-0.5 text-xs text-stone-400">
-                      {similarRoleInterviewCount.toLocaleString()} {interviewLabel} interviewed
+                      {isCompleted
+                        ? `${similarRoleInterviewCount.toLocaleString()} ${interviewLabel} interviewed`
+                        : "Interview not completed"}
                     </p>
                   </div>
 

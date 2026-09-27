@@ -10,6 +10,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { decodeUserIdFromToken, fetchAllInterviews, getQuota } from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { isCompletedInterview } from "../../lib/interviewStatus";
 import OverviewStatCard from "../../components/dashboard/overview/OverviewStatCard";
 import TokenUsageChart from "../../components/dashboard/overview/TokenUsageChart";
 import RecentFeedbackTable from "../../components/dashboard/overview/RecentFeedbackTable";
@@ -37,37 +38,43 @@ function getAverageScore(interviews) {
   return Math.round(total / scores.length);
 }
 
-function getTokenChartData(interviews, quota) {
-  const today = new Date();
-  const days = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - (6 - index));
-    date.setHours(0, 0, 0, 0);
-
-    return {
-      date,
-      label: date.toLocaleDateString(undefined, { weekday: "short" }),
-      tokens: 0,
-    };
-  });
-
-  interviews.forEach((interview) => {
-    const tokens = interview.tokensUsed || 0;
-    if (!tokens) return;
-
-    const date = new Date(interview.endedAt || interview.updatedAt || interview.createdAt);
-    if (Number.isNaN(date.getTime())) return;
-
-    const day = days.find((item) => item.date.toDateString() === date.toDateString());
-    if (day) day.tokens += tokens;
-  });
-
-  const hasInterviewTokens = days.some((day) => day.tokens > 0);
-  if (!hasInterviewTokens && quota?.tokenUsage) {
-    days[days.length - 1].tokens = quota.tokenUsage;
+function parseDateKey(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
   }
 
-  return days;
+  return value;
+}
+
+function formatDateLabel(dateKey) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  if (Number.isNaN(date.getTime())) return dateKey;
+
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function getTokenChartData(quota) {
+  const usageByDate = new Map(
+    (Array.isArray(quota?.dailyTokenUsage) ? quota.dailyTokenUsage : [])
+      .map((day) => [
+        parseDateKey(day.date),
+        Number.isFinite(Number(day.totalTokens)) ? Number(day.totalTokens) : 0,
+      ])
+      .filter(([date]) => date),
+  );
+
+  return [...usageByDate.entries()]
+    .sort(([firstDate], [secondDate]) => firstDate.localeCompare(secondDate))
+    .map(([date, tokens]) => ({
+      date,
+      label: formatDateLabel(date),
+      tokens,
+    }));
 }
 
 function Overview() {
@@ -118,13 +125,13 @@ function Overview() {
   }, [token, userId]);
 
   const completedInterviews = useMemo(
-    () => interviews.filter((interview) => interview.status !== "in_progress"),
+    () => interviews.filter(isCompletedInterview),
     [interviews],
   );
   const averageScore = useMemo(() => getAverageScore(completedInterviews), [completedInterviews]);
   const tokenChartData = useMemo(
-    () => getTokenChartData(completedInterviews, quota),
-    [completedInterviews, quota],
+    () => getTokenChartData(quota),
+    [quota],
   );
 
   if (loading) {
@@ -151,6 +158,12 @@ function Overview() {
   const percentUsed = Math.round(quota?.percentUsed || 0);
   const tokenUsage = quota?.tokenUsage || 0;
   const tokenLimit = quota?.tokenLimit || 100000;
+  const hasDailyTokenBreakdown =
+    Array.isArray(quota?.dailyTokenUsage) && quota.dailyTokenUsage.length > 0;
+  const dailyBreakdownUnavailable =
+    tokenUsage > 0 &&
+    (!hasDailyTokenBreakdown ||
+      !tokenChartData.some((day) => day.tokens > 0));
 
   return (
     <section className="min-h-full bg-stone-100 px-8 py-8">
@@ -208,8 +221,7 @@ function Overview() {
 
         <TokenUsageChart
           data={tokenChartData}
-          totalTokens={tokenUsage}
-          tokenLimit={tokenLimit}
+          unavailable={dailyBreakdownUnavailable}
         />
 
         <RecentFeedbackTable

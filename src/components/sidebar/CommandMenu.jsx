@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { fetchAllInterviews } from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { getInterviewStatusLabel } from "../../lib/interviewStatus";
 
 const CommandMenu = ({ open, setOpen }) => {
   const { token } = useAuth();
@@ -33,8 +34,8 @@ const CommandMenu = ({ open, setOpen }) => {
 
   useEffect(() => {
     if (!open) {
-      setValue("");
-      return;
+      const resetInput = window.setTimeout(() => setValue(""), 0);
+      return () => window.clearTimeout(resetInput);
     }
 
     let isMounted = true;
@@ -166,7 +167,7 @@ const CommandMenu = ({ open, setOpen }) => {
                         {interview.role}
                       </span>
                       <span className="rounded bg-stone-100 px-2 py-0.5 text-[11px] uppercase tracking-wide text-stone-500">
-                        {interview.standing || "Completed"}
+                        {interview.standing || getInterviewStatusLabel(interview)}
                       </span>
                     </div>
                     <p className="truncate text-xs text-stone-500">

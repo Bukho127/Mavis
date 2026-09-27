@@ -8,6 +8,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { fetchAllInterviews, getInterviewById } from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import {
+  getInterviewStatusLabel,
+  isCompletedInterview,
+} from "../../lib/interviewStatus";
 
 function getInterviewId(interview) {
   return interview?._id || interview?.id || interview?.interviewId;
@@ -58,12 +62,14 @@ function normalizeInterviews(data) {
 }
 
 function getFeedback(interview) {
+  if (!isCompletedInterview(interview)) return null;
+
   const feedback = interview?.feedback;
   if (!feedback || typeof feedback !== "object") return null;
 
   const hasContent =
     feedback.summary ||
-    feedback.overallScore ||
+    typeof feedback.overallScore === "number" ||
     feedback.strengths?.length ||
     feedback.weaknesses?.length ||
     Object.values(feedback.dimensionScores || {}).some(
@@ -159,13 +165,10 @@ function Feedback() {
         if (!isMounted) return;
 
         const nextInterviews = normalizeInterviews(data);
-        const completedInterviews = nextInterviews.filter(
-          (interview) => interview.status !== "in_progress",
-        );
+        const completedInterviews = nextInterviews.filter(isCompletedInterview);
         const nextSelectedId =
           getInterviewId(selectedFromNavigation) ||
-          getInterviewId(completedInterviews[0]) ||
-          getInterviewId(nextInterviews[0]);
+          getInterviewId(completedInterviews[0]);
 
         setSelectedId(nextSelectedId);
 
@@ -173,7 +176,7 @@ function Feedback() {
           (interview) => getInterviewId(interview) === nextSelectedId,
         );
         setSelectedInterview(
-          selectedFromNavigation || listMatch || nextInterviews[0] || null,
+          selectedFromNavigation || listMatch || completedInterviews[0] || null,
         );
       } catch (err) {
         if (!isMounted) return;
@@ -252,8 +255,9 @@ function Feedback() {
 }
 
 function FeedbackDocument({ interview }) {
+  const isCompleted = isCompletedInterview(interview);
   const feedback = getFeedback(interview);
-  const evaluations = Array.isArray(interview?.answerEvaluations)
+  const evaluations = isCompleted && Array.isArray(interview?.answerEvaluations)
     ? interview.answerEvaluations
     : [];
   const scores = feedback?.dimensionScores || {};
@@ -286,11 +290,15 @@ function FeedbackDocument({ interview }) {
               : "Interview session"}
           </span>
           <span>-</span>
-          <span className="capitalize">{interview.status || "completed"}</span>
+          <span>{getInterviewStatusLabel(interview)}</span>
         </div>
       </header>
 
-      {!feedback ? (
+      {!isCompleted ? (
+        <div className="m-7 rounded-md border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600 sm:m-9">
+          No evaluation is available because this interview was not completed.
+        </div>
+      ) : !feedback ? (
         <div className="m-7 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 sm:m-9">
           Feedback has not been generated for this interview yet. If this
           interview just ended, wait a moment and refresh once the agent has
@@ -331,31 +339,33 @@ function FeedbackDocument({ interview }) {
         </div>
       )}
 
-      <section className="border-t border-stone-200 px-7 py-7 sm:px-9">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-stone-950">
-            Answer evidence
-          </h2>
-          <span className="text-xs text-stone-500">
-            {evaluations.length} recorded
-          </span>
-        </div>
-
-        {evaluations.length ? (
-          <div className="space-y-3">
-            {evaluations.map((evaluation, index) => (
-              <EvaluationCard
-                key={evaluation._id || `${evaluation.questionText}-${index}`}
-                evaluation={evaluation}
-              />
-            ))}
+      {isCompleted && (
+        <section className="border-t border-stone-200 px-7 py-7 sm:px-9">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-stone-950">
+              Answer evidence
+            </h2>
+            <span className="text-xs text-stone-500">
+              {evaluations.length} recorded
+            </span>
           </div>
-        ) : (
-          <p className="rounded-md border border-stone-200 bg-stone-50 p-4 text-sm text-stone-500 mb-4">
-            No per-answer evaluations were saved for this session.
-          </p>
-        )}
-      </section>
+
+          {evaluations.length ? (
+            <div className="space-y-3">
+              {evaluations.map((evaluation, index) => (
+                <EvaluationCard
+                  key={evaluation._id || `${evaluation.questionText}-${index}`}
+                  evaluation={evaluation}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-md border border-stone-200 bg-stone-50 p-4 text-sm text-stone-500 mb-4">
+              No per-answer evaluations were saved for this session.
+            </p>
+          )}
+        </section>
+      )}
     </article>
   );
 }

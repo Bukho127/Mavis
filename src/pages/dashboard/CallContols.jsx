@@ -10,6 +10,25 @@ import {
 
 import { useRoom } from "../../context/RoomContext";
 
+function getFinalTranscriptPayload(transcript) {
+  const seenIds = new Set();
+
+  return transcript
+    .filter((entry) => {
+      const text = entry?.text?.trim();
+      if (!text || entry.final !== true || seenIds.has(entry.id)) return false;
+
+      seenIds.add(entry.id);
+      return true;
+    })
+    .map((entry) => ({
+      id: entry.id,
+      speaker: entry.speaker,
+      text: entry.text.trim(),
+      timestamp: entry.timestamp,
+    }));
+}
+
 function CallControls({ onEndCall }) {
   const {
     isConnected,
@@ -19,22 +38,21 @@ function CallControls({ onEndCall }) {
     transcript,
     toggleMute,
     toggleVideo,
-    disconnect,
   } = useRoom();
 
   const handleEndCall = () => {
-    disconnect();
-
-    onEndCall?.(transcript);
+    onEndCall?.(getFinalTranscriptPayload(transcript), "completed");
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-2 px-8 py-4 text-sm text-stone-700">
+    <div className="flex w-full flex-col items-center gap-3 px-8 py-4 text-sm text-stone-700">
       {error && (
-        <p className="text-xs text-red-500">{error}</p>
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+          {error}
+        </p>
       )}
 
-      <div className="flex items-center justify-center gap-6">
+      <div className="flex items-center justify-center gap-3 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
         <button
           type="button"
           onClick={toggleMute}
@@ -42,7 +60,7 @@ function CallControls({ onEndCall }) {
           aria-label={
             isMuted ? "Unmute" : "Mute"
           }
-          className="cursor-pointer rounded-sm border border-stone-300 p-3 hover:bg-stone-200 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-stone-300 bg-white text-stone-700 hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <HugeiconsIcon
             icon={
@@ -63,7 +81,7 @@ function CallControls({ onEndCall }) {
               ? "Turn off video"
               : "Turn on video"
           }
-          className="cursor-pointer rounded-sm border border-stone-300 p-3 hover:bg-stone-200 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-stone-300 bg-white text-stone-700 hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <HugeiconsIcon
             icon={
@@ -78,7 +96,7 @@ function CallControls({ onEndCall }) {
         <button
           type="button"
           onClick={handleEndCall}
-          className="flex cursor-pointer items-center gap-3 rounded-sm bg-red-600 p-3 text-white hover:bg-red-700"
+          className="flex h-11 cursor-pointer items-center gap-2 rounded-md bg-red-600 px-4 text-white hover:bg-red-700"
         >
           <HugeiconsIcon
             icon={CallEnd04Icon}
